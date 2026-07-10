@@ -63,6 +63,8 @@ test('specification and app entrypoint are present', () => {
   assert.match(app, /clienteDetalhePage/);
   assert.match(app, /veiculoDetalhePage/);
   assert.match(app, /produtoDetalhePage/);
+  assert.match(app, /operationChecklist/);
+  assert.match(app, /messageComposer/);
   assert.ok(metrics.monthlyRevenue > 0);
   assert.ok(vehicles.length >= 5);
 });

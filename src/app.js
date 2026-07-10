@@ -345,7 +345,7 @@ function novaTrocaPage() {
       <div class="card pad" style="grid-column:span 2">
         <h2>Produtos utilizados</h2>
         <p class="subtle">Cada item vem do estoque e mostra disponibilidade antes da finalizacao.</p>
-        <div class="chips" style="margin:12px 0">${products.map(productChip).join('')}</div>
+        ${productCategorySelector()}
         <div class="table-wrap">${selectedProductsTable(selected)}</div>
       </div>
     </section>
@@ -371,7 +371,68 @@ function novaTrocaPage() {
         </div>
       </div>
     </section>
+    <section class="grid cols-2" style="margin-top:14px">
+      ${operationChecklist(vehicle, selected)}
+      ${messageComposer(customer, vehicle)}
+    </section>
   `);
+}
+
+function productCategorySelector() {
+  const groups = [
+    ['Oleo do motor', products.filter((product) => product.category === 'Oleos do motor')],
+    ['Filtros', products.filter((product) => product.category === 'Filtros')],
+    ['Complementos', products.filter((product) => !['Oleos do motor', 'Filtros'].includes(product.category))],
+  ];
+  return `<div class="grid cols-3" style="margin:12px 0">${groups.map(([title, items]) => `
+    <div class="card pad" style="box-shadow:none">
+      <h3>${title}</h3>
+      <div class="chips" style="margin-top:10px">${items.map(productChip).join('')}</div>
+    </div>
+  `).join('')}</div>`;
+}
+
+function operationChecklist(vehicle, selected) {
+  const hasOil = selected.some((product) => product.category === 'Oleos do motor');
+  const hasFilter = selected.some((product) => product.category === 'Filtros');
+  const hasNoStock = selected.some((product) => product.stock <= 0);
+  const hasLowStock = selected.some((product) => product.stock > 0 && product.stock <= product.min);
+  const rows = [
+    [hasOil, 'Oleo selecionado', 'Escolha ao menos um oleo antes de finalizar.'],
+    [hasFilter, 'Filtro selecionado', 'Confirme se o filtro foi trocado ou marque como nao trocado.'],
+    [vehicle.km >= vehicle.lastKm, 'Km coerente', 'Km atual nao pode ser menor que a ultima troca.'],
+    [!hasNoStock, 'Sem item zerado', 'Existe produto sem estoque selecionado.'],
+    [!hasLowStock, 'Estoque saudavel', 'Um item ficara em alerta apos a baixa.'],
+  ];
+  return `
+    <div class="card pad">
+      <h2>Checklist antes de finalizar</h2>
+      <div class="timeline" style="margin-top:14px">
+        ${rows.map(([ok, title, detail]) => `
+          <div class="timeline-item">
+            <span class="dot" style="background:${ok ? 'var(--success)' : 'var(--warn)'};box-shadow:0 0 0 4px ${ok ? '#dcfce7' : '#ffedd5'}"></span>
+            <div><strong>${title}</strong><div class="subtle">${ok ? 'OK' : detail}</div></div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function messageComposer(customer, vehicle) {
+  return `
+    <div class="card pad">
+      <h2>Mensagem preparada</h2>
+      <p class="subtle">Preview com variaveis reais da OS para o retorno do cliente.</p>
+      <div class="card pad" style="margin-top:12px;background:#f0fdf4;box-shadow:none">
+        <p>Ola, ${customer.name.split(' ')[0]}! Sua troca do ${vehicle.model} foi registrada. Proximo retorno sugerido: ${(vehicle.km + 5000).toLocaleString('pt-BR')} km ou em 90 dias. ${brand.company} agradece sua preferencia.</p>
+      </div>
+      <div class="chips" style="margin-top:12px">
+        <button class="btn" data-action="whatsapp">Enviar comprovante</button>
+        <button class="btn primary" data-action="finish-order">Finalizar e programar retorno</button>
+      </div>
+    </div>
+  `;
 }
 
 function selectedProductsTable(selected) {

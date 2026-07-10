@@ -116,6 +116,9 @@ Estado da ultima validacao feita:
 - Simulacao de placa nao encontrada.
 - Duplicar ultima troca.
 - Selecionar/remover produtos da OS.
+- Ver produtos agrupados por oleo, filtros e complementos.
+- Ver checklist antes de finalizar OS.
+- Ver preview de mensagem com variaveis reais da OS.
 - Finalizar OS com toast.
 - Enviar lembretes.
 - Confirmar entrada de estoque.
