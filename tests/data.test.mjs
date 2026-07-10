@@ -55,9 +55,14 @@ test('visual boards exist and are referenced', () => {
 test('specification and app entrypoint are present', () => {
   const spec = readFileSync('entrada/ESPECIFICACAO_SAAS_TROCA_OLEO.md', 'utf8');
   const html = readFileSync('index.html', 'utf8');
+  const app = readFileSync('src/app.js', 'utf8');
   assert.match(spec, /SaaS multiempresa/);
   assert.match(spec, /troca de óleo|troca de oleo/i);
   assert.match(html, /src\/app\.js/);
+  assert.match(app, /ordemDetalhePage/);
+  assert.match(app, /clienteDetalhePage/);
+  assert.match(app, /veiculoDetalhePage/);
+  assert.match(app, /produtoDetalhePage/);
   assert.ok(metrics.monthlyRevenue > 0);
   assert.ok(vehicles.length >= 5);
 });

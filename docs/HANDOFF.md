@@ -21,6 +21,7 @@ O fluxo central do produto e:
 ## Estado Atual
 
 O projeto ja tem uma primeira aplicacao navegavel em SPA estatica, sem dependencias externas obrigatorias.
+As imagens em `entrada/*.PNG` foram substituidas por versoes validadas e todos os sete arquivos passam em verificacao via PIL.
 
 Arquivos principais:
 
@@ -104,6 +105,10 @@ Estado da ultima validacao feita:
 - Configuracoes.
 - Referencias visuais.
 - Estado de sem permissao.
+- Detalhe de OS.
+- Detalhe de cliente.
+- Detalhe de veiculo.
+- Detalhe de produto.
 
 ## Interacoes Ja Simuladas
 
@@ -119,6 +124,7 @@ Estado da ultima validacao feita:
 - Trocar perfil de permissao.
 - Abrir personalizacao de colunas.
 - Avancar/voltar onboarding.
+- Navegar de tabelas para detalhes de OS, cliente, veiculo e produto.
 
 ## Pontos Importantes para Proximos Agentes
 

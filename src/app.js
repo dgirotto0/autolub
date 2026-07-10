@@ -128,7 +128,7 @@ function shell(content) {
 function brandBlock() {
   return `
     <button class="brand nav-reset" data-route="/dashboard" aria-label="Ir para dashboard">
-      <span class="brand-mark">滴</span>
+      <span class="brand-mark">A</span>
       <span>
         <span class="brand-name">${brand.name}</span>
         <span class="brand-tag">${brand.tagline}</span>
@@ -460,6 +460,145 @@ function configuracoesPage() {
   `);
 }
 
+function ordemDetalhePage(id) {
+  const order = workOrders.find((item) => item.id === id) || workOrders[0];
+  const vehicle = vehicles.find((item) => item.plate === order.plate);
+  const customer = customers.find((item) => item.id === order.customerId);
+  const selected = productsFor(order);
+  return shell(`
+    ${pageHead(`OS ${order.id}`, 'Detalhe completo da troca, produtos, valores, retorno e historico de alteracoes.', `
+      <button class="btn" data-route="/nova-troca">Duplicar atendimento</button>
+      <button class="btn" data-action="whatsapp">Reenviar comprovante</button>
+      <button class="btn primary" data-route="/atendimento">Nova troca para placa</button>
+    `)}
+    <section class="grid cols-3">
+      <div class="card pad">
+        <h2>Cliente</h2>
+        <p><strong>${customer.name}</strong></p>
+        <p class="subtle">${customer.phone}<br>${customer.email}</p>
+        <button class="btn" data-route="/clientes/${customer.id}">Ver cliente</button>
+      </div>
+      <div class="card pad">
+        <h2>Veiculo</h2>
+        <p><strong>${vehicle.plate}</strong></p>
+        <p class="subtle">${vehicle.model}<br>${vehicle.km.toLocaleString('pt-BR')} km atuais</p>
+        <button class="btn" data-route="/veiculos/${vehicle.plate}">Ver veiculo</button>
+      </div>
+      <div class="card pad">
+        <h2>Status</h2>
+        ${badge(order.status)}
+        <p class="subtle" style="margin-top:12px">Finalizada em ${order.date}</p>
+        <p><strong>Total:</strong> ${currency(order.total)}</p>
+      </div>
+    </section>
+    <section class="grid cols-2" style="margin-top:14px">
+      <div class="card">
+        <div class="card-head"><h2>Produtos usados</h2></div>
+        <div class="table-wrap">${selectedProductsTable(selected)}</div>
+      </div>
+      <div class="card pad">
+        <h2>Proximo retorno</h2>
+        <div class="timeline" style="margin-top:14px">
+          <div class="timeline-item"><span class="dot"></span><div><strong>Km da troca</strong><div class="subtle">${order.km.toLocaleString('pt-BR')} km</div></div></div>
+          <div class="timeline-item"><span class="dot"></span><div><strong>Proxima troca</strong><div class="subtle">${order.nextKm.toLocaleString('pt-BR')} km ou ${order.nextDate}</div></div></div>
+          <div class="timeline-item"><span class="dot"></span><div><strong>Mensagem</strong><div class="subtle">Lembrete programado para WhatsApp.</div></div></div>
+        </div>
+      </div>
+    </section>
+  `);
+}
+
+function clienteDetalhePage(id) {
+  const customer = customers.find((item) => item.id === id) || customers[0];
+  const ownedVehicles = vehicles.filter((vehicle) => vehicle.customerId === customer.id);
+  const customerOrders = workOrders.filter((order) => order.customerId === customer.id);
+  return shell(`
+    ${pageHead(customer.name, 'Dados pessoais, veiculos, historico de trocas, retorno e mensagens.', `
+      <button class="btn" data-action="whatsapp">WhatsApp</button>
+      <button class="btn primary" data-route="/nova-troca">Nova troca</button>
+    `)}
+    <section class="grid cols-3">
+      <div class="card pad">
+        <h2>Contato</h2>
+        <p class="subtle">${customer.phone}<br>${customer.email}<br>${customer.city}</p>
+        ${badge(customer.status)}
+      </div>
+      ${metricCard('Total gasto', currency(customer.total), '+9%')}
+      ${metricCard('Ticket medio', currency(customerOrders.reduce((sum, order) => sum + order.total, 0) / Math.max(customerOrders.length, 1)), '+4%')}
+    </section>
+    <section class="grid cols-2" style="margin-top:14px">
+      <div class="card"><div class="card-head"><h2>Veiculos vinculados</h2></div><div class="table-wrap">${vehiclesTable(ownedVehicles)}</div></div>
+      <div class="card"><div class="card-head"><h2>Historico de trocas</h2></div><div class="table-wrap">${ordersTable(customerOrders)}</div></div>
+    </section>
+  `);
+}
+
+function veiculoDetalhePage(plate) {
+  const vehicle = vehicles.find((item) => item.plate === plate) || vehicles[0];
+  const customer = customerFor(vehicle);
+  const vehicleOrders = workOrders.filter((order) => order.plate === vehicle.plate);
+  return shell(`
+    ${pageHead(`${vehicle.plate} - ${vehicle.model}`, 'Historico completo por placa, produtos usados e retorno programado.', `
+      <button class="btn" data-action="whatsapp">Enviar lembrete</button>
+      <button class="btn primary" data-route="/nova-troca">Nova troca</button>
+    `)}
+    <section class="grid cols-4">
+      ${metricCard('Km atual', `${vehicle.km.toLocaleString('pt-BR')} km`, '+5%')}
+      ${metricCard('Ultima troca', `${vehicle.lastKm.toLocaleString('pt-BR')} km`, '+0%')}
+      ${metricCard('Proxima troca', `${vehicle.nextKm.toLocaleString('pt-BR')} km`, '+0%')}
+      <div class="card metric"><div class="metric-label">Status</div><div style="margin-top:10px">${badge(vehicle.status)}</div><p class="subtle">${vehicle.nextDate}</p></div>
+    </section>
+    <section class="grid cols-2" style="margin-top:14px">
+      <div class="card pad">
+        <h2>Cliente vinculado</h2>
+        <p><strong>${customer.name}</strong></p>
+        <p class="subtle">${customer.phone}</p>
+        <button class="btn" data-route="/clientes/${customer.id}">Ver cliente</button>
+      </div>
+      <div class="card pad">
+        <h2>Produtos da ultima troca</h2>
+        <div class="chips" style="margin-top:12px">${productsFor(vehicleOrders[0] || workOrders[0]).map(productChip).join('')}</div>
+      </div>
+    </section>
+    <section class="card" style="margin-top:14px"><div class="card-head"><h2>Linha do tempo</h2></div><div class="table-wrap">${ordersTable(vehicleOrders)}</div></section>
+  `);
+}
+
+function produtoDetalhePage(id) {
+  const product = products.find((item) => item.id === id) || products[0];
+  return shell(`
+    ${pageHead(product.name, 'Cadastro do produto, estoque, precos, margem e historico de movimentacao.', `
+      <button class="btn" data-route="/compras">Entrada</button>
+      <button class="btn primary" data-action="save-settings">Salvar produto</button>
+    `)}
+    <section class="grid cols-4">
+      ${metricCard('Estoque atual', `${product.stock} ${product.unit}`, product.stock <= product.min ? '- baixo' : '+ ok', product.stock <= product.min)}
+      ${metricCard('Estoque minimo', `${product.min} ${product.unit}`, '+0%')}
+      ${metricCard('Preco venda', currency(product.price), '+3%')}
+      ${metricCard('Margem', `${product.margin}%`, '+2%')}
+    </section>
+    <section class="grid cols-2" style="margin-top:14px">
+      <div class="card pad">
+        <h2>Dados do produto</h2>
+        <div class="grid cols-2" style="margin-top:12px">
+          <label class="field"><span>SKU</span><input class="input" value="${product.sku}" /></label>
+          <label class="field"><span>Marca</span><input class="input" value="${product.brand}" /></label>
+          <label class="field"><span>Categoria</span><input class="input" value="${product.category}" /></label>
+          <label class="field"><span>Status</span><input class="input" value="${product.status}" /></label>
+        </div>
+      </div>
+      <div class="card pad">
+        <h2>Movimentacoes recentes</h2>
+        <div class="timeline" style="margin-top:14px">
+          <div class="timeline-item"><span class="dot"></span><div><strong>Saida por OS</strong><div class="subtle">1 un - hoje</div></div></div>
+          <div class="timeline-item"><span class="dot"></span><div><strong>Entrada de nota</strong><div class="subtle">12 un - 12/05/2025</div></div></div>
+          <div class="timeline-item"><span class="dot"></span><div><strong>Ajuste de minimo</strong><div class="subtle">Minimo atualizado para ${product.min}</div></div></div>
+        </div>
+      </div>
+    </section>
+  `);
+}
+
 function referenciasPage() {
   return shell(`
     ${pageHead('Referencias visuais', 'Boards recebidos no pacote e usados como direcao visual principal.', '')}
@@ -560,20 +699,20 @@ function ordersTable(rows, full = true) {
   return `<table><thead><tr><th>OS</th><th>Cliente</th><th>Veiculo</th><th>Km</th><th>Status</th><th>Total</th>${full ? '<th>Acoes</th>' : ''}</tr></thead><tbody>${rows.map((order) => {
     const vehicle = vehicles.find((item) => item.plate === order.plate);
     const customer = customers.find((item) => item.id === order.customerId);
-    return `<tr><td>${order.id}</td><td>${customer.name}</td><td>${vehicle.model}</td><td>${order.km.toLocaleString('pt-BR')}</td><td>${badge(order.status)}</td><td>${currency(order.total)}</td>${full ? '<td><button class="btn">Abrir</button></td>' : ''}</tr>`;
+    return `<tr><td>${order.id}</td><td><button class="btn ghost" data-route="/clientes/${customer.id}">${customer.name}</button></td><td><button class="btn ghost" data-route="/veiculos/${vehicle.plate}">${vehicle.model}</button></td><td>${order.km.toLocaleString('pt-BR')}</td><td>${badge(order.status)}</td><td>${currency(order.total)}</td>${full ? `<td><button class="btn" data-route="/trocas/${order.id}">Abrir</button></td>` : ''}</tr>`;
   }).join('')}</tbody></table>`;
 }
 
 function customersTable(rows) {
-  return `<table><thead><tr><th>Nome</th><th>Telefone</th><th>Cidade</th><th>Ultima troca</th><th>Proximo retorno</th><th>Status</th><th>Total gasto</th></tr></thead><tbody>${rows.map((c) => `<tr><td>${c.name}</td><td>${c.phone}</td><td>${c.city}</td><td>${c.last}</td><td>${c.next}</td><td>${badge(c.status)}</td><td>${currency(c.total)}</td></tr>`).join('')}</tbody></table>`;
+  return `<table><thead><tr><th>Nome</th><th>Telefone</th><th>Cidade</th><th>Ultima troca</th><th>Proximo retorno</th><th>Status</th><th>Total gasto</th><th>Acoes</th></tr></thead><tbody>${rows.map((c) => `<tr><td>${c.name}</td><td>${c.phone}</td><td>${c.city}</td><td>${c.last}</td><td>${c.next}</td><td>${badge(c.status)}</td><td>${currency(c.total)}</td><td><button class="btn" data-route="/clientes/${c.id}">Ver</button></td></tr>`).join('')}</tbody></table>`;
 }
 
 function vehiclesTable(rows) {
-  return `<table><thead><tr><th>Placa</th><th>Modelo</th><th>Cliente</th><th>Km atual</th><th>Proxima troca</th><th>Status</th></tr></thead><tbody>${rows.map((v) => `<tr><td>${v.plate}</td><td>${v.model}</td><td>${customerFor(v).name}</td><td>${v.km.toLocaleString('pt-BR')}</td><td>${v.nextKm.toLocaleString('pt-BR')} km</td><td>${badge(v.status)}</td></tr>`).join('')}</tbody></table>`;
+  return `<table><thead><tr><th>Placa</th><th>Modelo</th><th>Cliente</th><th>Km atual</th><th>Proxima troca</th><th>Status</th><th>Acoes</th></tr></thead><tbody>${rows.map((v) => `<tr><td>${v.plate}</td><td>${v.model}</td><td><button class="btn ghost" data-route="/clientes/${customerFor(v).id}">${customerFor(v).name}</button></td><td>${v.km.toLocaleString('pt-BR')}</td><td>${v.nextKm.toLocaleString('pt-BR')} km</td><td>${badge(v.status)}</td><td><button class="btn" data-route="/veiculos/${v.plate}">Ver</button></td></tr>`).join('')}</tbody></table>`;
 }
 
 function productsTable(rows) {
-  return `<table><thead><tr><th>SKU</th><th>Produto</th><th>Categoria</th><th>Estoque</th><th>Min.</th><th>Preco</th><th>Margem</th><th>Status</th></tr></thead><tbody>${rows.map((p) => `<tr><td>${p.sku}</td><td>${p.name}</td><td>${p.category}</td><td>${p.stock} ${p.unit}</td><td>${p.min}</td><td>${currency(p.price)}</td><td>${p.margin}%</td><td>${badge(p.status)}</td></tr>`).join('')}</tbody></table>`;
+  return `<table><thead><tr><th>SKU</th><th>Produto</th><th>Categoria</th><th>Estoque</th><th>Min.</th><th>Preco</th><th>Margem</th><th>Status</th><th>Acoes</th></tr></thead><tbody>${rows.map((p) => `<tr><td>${p.sku}</td><td>${p.name}</td><td>${p.category}</td><td>${p.stock} ${p.unit}</td><td>${p.min}</td><td>${currency(p.price)}</td><td>${p.margin}%</td><td>${badge(p.status)}</td><td><button class="btn" data-route="/estoque/${p.id}">Ver</button></td></tr>`).join('')}</tbody></table>`;
 }
 
 function returnsTable(rows, full = true) {
@@ -628,7 +767,24 @@ const pageMap = {
 };
 
 export function render() {
-  const view = pageMap[route()] || dashboardPage;
+  const current = route();
+  if (current.startsWith('/trocas/')) {
+    app.innerHTML = ordemDetalhePage(decodeURIComponent(current.split('/')[2] || ''));
+    return;
+  }
+  if (current.startsWith('/clientes/')) {
+    app.innerHTML = clienteDetalhePage(decodeURIComponent(current.split('/')[2] || ''));
+    return;
+  }
+  if (current.startsWith('/veiculos/')) {
+    app.innerHTML = veiculoDetalhePage(decodeURIComponent(current.split('/')[2] || ''));
+    return;
+  }
+  if (current.startsWith('/estoque/')) {
+    app.innerHTML = produtoDetalhePage(decodeURIComponent(current.split('/')[2] || ''));
+    return;
+  }
+  const view = pageMap[current] || dashboardPage;
   app.innerHTML = view();
 }
 

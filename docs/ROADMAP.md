@@ -22,6 +22,8 @@ Ja feito:
 - Estoque, retornos, mensagens, relatorios, financeiro e configuracoes.
 - Onboarding e autenticacao visual.
 - Testes automatizados basicos.
+- Detalhes navegaveis de OS, cliente, veiculo e produto.
+- Boards visuais locais validados como PNGs integros.
 
 Ainda fazer:
 
@@ -30,7 +32,7 @@ Ainda fazer:
 - Adicionar mais casos mockados para placa inexistente, produto sem estoque e cliente inativo.
 - Tornar a tela de nova OS mais proxima de uma operacao real, com agrupamento por categoria.
 - Melhorar a experiencia mobile de nova troca.
-- Adicionar tela de detalhe real para cliente, veiculo, produto e OS.
+- Evoluir detalhe de cliente, veiculo, produto e OS com edicao real e historico mais profundo.
 
 Critérios de aceite:
 
