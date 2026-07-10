@@ -32,6 +32,9 @@ Arquivos principais:
 - `tests/data.test.mjs`: testes automatizados de escopo e integridade.
 - `README.md`: comandos para rodar e testar.
 - `PLANO_EXECUCAO_SAAS_TROCA_OLEO.md`: plano de execucao e entendimento da especificacao.
+- `docs/TASKS.md`: backlog operacional e ordem recomendada das proximas tarefas.
+- `docs/ROADMAP.md`: fases de produto do prototipo ate backend/deploy.
+- `docs/AGENT_CHECKLIST.md`: checklist para agentes antes de alterar e commitar.
 - `entrada/ESPECIFICACAO_SAAS_TROCA_OLEO.md`: especificacao original do produto.
 - `entrada/*.PNG`: boards visuais de referencia.
 
@@ -137,3 +140,4 @@ Estado da ultima validacao feita:
 - Preservar responsividade real. Mobile deve ser operacional, nao apenas uma tela desktop encolhida.
 - Toda nova tela importante deve prever loading, vazio, erro, sem permissao e sucesso.
 - Dados mockados devem continuar centralizados em `src/data.js` ate existir backend.
+- Issues do GitHub devem espelhar as tarefas de `docs/TASKS.md`.

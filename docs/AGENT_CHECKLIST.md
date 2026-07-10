@@ -16,6 +16,7 @@
 - Retorno por km/data e parte central do produto.
 - Mobile precisa ser operacional.
 - Toda acao importante deve ter feedback visual.
+- Qualquer imagem nova usada no site deve ser vetorizada, simplificada ou otimizada antes de entrar no repo.
 
 ## Regras de Codigo
 

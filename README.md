@@ -23,6 +23,22 @@ http://127.0.0.1:4173/#/nova-troca
 http://127.0.0.1:4173/#/referencias
 ```
 
+## Servidor Persistente
+
+Para manter a aplicacao em segundo plano mesmo depois de fechar a sessao atual:
+
+```bash
+screen -dmS autolub-server /bin/bash -lc 'cd /home/danielgirotto/Projetos/saas-trocadeoleo && python3 -m http.server 4173 --bind 0.0.0.0'
+```
+
+Para verificar a sessao:
+
+```bash
+screen -ls
+```
+
+Para abrir no Tailscale, use o IP do host na porta `4173`.
+
 ## Testes
 
 ```bash
@@ -55,6 +71,7 @@ Para continuar o projeto sem depender do historico da conversa:
 
 - Leia `docs/HANDOFF.md`.
 - Siga `docs/ROADMAP.md`.
+- Use `docs/TASKS.md` como backlog operacional.
 - Use `docs/AGENT_CHECKLIST.md` antes de commitar qualquer alteracao.
 - Consulte `PLANO_EXECUCAO_SAAS_TROCA_OLEO.md` para a leitura consolidada da especificacao.
 
