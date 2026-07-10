@@ -20,16 +20,18 @@ O fluxo central do produto e:
 
 ## Estado Atual
 
-O projeto ja tem uma primeira aplicacao navegavel em SPA estatica, sem dependencias externas obrigatorias.
+O projeto ja tem uma primeira aplicacao navegavel em SPA estatica e um servidor Node local que entrega frontend e API no mesmo host.
 As imagens em `entrada/*.PNG` foram substituidas por versoes validadas e todos os sete arquivos passam em verificacao via PIL.
 
 Arquivos principais:
 
 - `index.html`: entrada da aplicacao.
+- `server.mjs`: servidor local Node para SPA e API.
 - `src/app.js`: renderizacao das telas, rotas por hash e interacoes.
 - `src/data.js`: dados mockados centralizados.
 - `src/styles.css`: design system, layout desktop/mobile e componentes.
 - `tests/data.test.mjs`: testes automatizados de escopo e integridade.
+- `tests/api.test.mjs`: testes de contrato da API local.
 - `README.md`: comandos para rodar e testar.
 - `PLANO_EXECUCAO_SAAS_TROCA_OLEO.md`: plano de execucao e entendimento da especificacao.
 - `docs/TASKS.md`: backlog operacional e ordem recomendada das proximas tarefas.
@@ -37,13 +39,14 @@ Arquivos principais:
 - `docs/AGENT_CHECKLIST.md`: checklist para agentes antes de alterar e commitar.
 - `entrada/ESPECIFICACAO_SAAS_TROCA_OLEO.md`: especificacao original do produto.
 - `entrada/*.PNG`: boards visuais de referencia.
+- `supabase/schema.sql`: schema para recriar o banco Supabase do zero.
 
 ## Decisoes Tomadas
 
 - Nome final do produto: `AutoLub`.
 - Primeira versao: aplicacao front-end navegavel com dados mockados realistas.
-- Sem backend real nesta etapa.
-- Sem dependencia externa obrigatoria para rodar localmente.
+- Backend local inicial em Node para servir a SPA e expor rotas de leitura da operacao.
+- Schema do Supabase mantido em SQL para recriacao limpa do banco.
 - Rotas por hash para funcionar bem como site estatico.
 - Mocks separados da UI para facilitar troca futura por API.
 - Testes com `node:test`, sem instalar framework adicional.
@@ -72,6 +75,16 @@ Rotas uteis:
 /#/referencias
 ```
 
+API util para validacao e integracao:
+
+```text
+/api/health
+/api/dashboard
+/api/customers/:id
+/api/vehicles/:plate
+/api/products/:id
+```
+
 ## Como Testar
 
 ```bash
@@ -83,7 +96,7 @@ Estado da ultima validacao feita:
 
 - `npm run check`: passou.
 - `npm test`: passou.
-- Smoke HTTP local: passou para HTML, JS, CSS e PNG.
+- Smoke HTTP local: passou para HTML e API local.
 
 ## Telas Ja Navegaveis
 

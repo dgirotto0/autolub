@@ -45,8 +45,13 @@ Critérios de aceite:
 
 Objetivo:
 
-- substituir mocks por API;
+- substituir mocks por API e persistencia real;
 - persistir empresas, usuarios, clientes, veiculos, estoque, OS e retornos.
+
+Estado atual:
+
+- servidor Node local entregando SPA e API de leitura;
+- schema inicial do Supabase preparado para recriacao do banco.
 
 Decisoes pendentes:
 

@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "node --check src/app.js",
-    "test": "node --test tests/data.test.mjs",
-    "dev": "python3 -m http.server 4173 --bind 127.0.0.1"
+    "check": "node --check src/app.js && node --check server.mjs",
+    "test": "node --test tests/data.test.mjs tests/api.test.mjs",
+    "dev": "node server.mjs"
   }
 }

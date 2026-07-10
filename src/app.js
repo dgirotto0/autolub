@@ -104,23 +104,42 @@ function bars(values = [18, 28, 22, 36, 41, 33, 30, 44, 52, 38, 48, 55]) {
 function shell(content) {
   const current = route();
   return `
-    <div class="app-shell">
-      <aside class="sidebar">
-        ${brandBlock()}
-        ${routeGroups.map((group) => `
-          <div class="nav-section">
-            <div class="nav-label">${group.label}</div>
-            ${group.routes.map((item) => navItem(item, current)).join('')}
+    <div class="app-frame">
+      <header class="system-bar">
+        <div class="system-brand">
+          <span class="system-mark">◔</span>
+          <div>
+            <div class="system-name">${brand.name}</div>
+            <div class="system-tag">${brand.legalName}</div>
           </div>
-        `).join('')}
-      </aside>
-      <main class="main">
-        ${topbar()}
-        ${content}
-      </main>
-      ${bottomNav(current)}
-      ${state.toast ? `<div class="toast">${state.toast}</div>` : ''}
-      ${state.drawer ? drawer() : ''}
+        </div>
+        <div class="system-center">
+          <div class="system-title">Design system operacional</div>
+          <div class="system-subtitle">Tela desktop inspirada nos boards de referencia para troca de oleo.</div>
+        </div>
+        <div class="system-meta">
+          <span class="system-pill">Versao 1.0</span>
+          <span class="system-pill">Maio/2025</span>
+        </div>
+      </header>
+      <div class="app-shell">
+        <aside class="sidebar">
+          ${brandBlock()}
+          ${routeGroups.map((group) => `
+            <div class="nav-section">
+              <div class="nav-label">${group.label}</div>
+              ${group.routes.map((item) => navItem(item, current)).join('')}
+            </div>
+          `).join('')}
+        </aside>
+        <main class="main">
+          ${topbar()}
+          ${content}
+        </main>
+        ${bottomNav(current)}
+        ${state.toast ? `<div class="toast">${state.toast}</div>` : ''}
+        ${state.drawer ? drawer() : ''}
+      </div>
     </div>
   `;
 }
@@ -182,40 +201,95 @@ function bottomNav(current) {
 function dashboardPage() {
   return shell(`
     ${pageHead('Dashboard operacional', 'Visao clara da loja, retornos, estoque e faturamento.', `
-      <button class="btn" data-route="/atendimento">${iconMap.search} Buscar placa</button>
-      <button class="btn primary" data-route="/nova-troca">${iconMap.plus} Nova troca</button>
+      <button class="btn" data-route="/atendimento">${iconMap.search} Atendimento por placa</button>
+      <button class="btn primary" data-route="/nova-troca">${iconMap.plus} Nova troca / OS</button>
     `)}
-    <section class="grid cols-5">
-      ${metricCard('Atendimentos do dia', metrics.todayServices)}
-      ${metricCard('Trocas finalizadas', metrics.finalized)}
-      ${metricCard('Clientes para retorno', metrics.returns, '+15%')}
-      ${metricCard('Estoque baixo', metrics.lowStock, '-4%', true)}
-      ${metricCard('Faturamento do mes', currency(metrics.monthlyRevenue))}
+    <section class="dashboard-hero">
+      <div class="card dashboard-panel dashboard-panel-main">
+        <div class="panel-head compact">
+          <div>
+            <div class="eyebrow">1. Dashboard operacional</div>
+            <h2>Painel rapido para balcao</h2>
+          </div>
+          <div class="panel-actions">
+            <span class="mini-pill">05/06/2025 - 30/06/2025</span>
+            <span class="mini-pill">Hoje</span>
+          </div>
+        </div>
+        <div class="grid cols-4 metrics-grid">
+          ${metricCard('Trocas realizadas', '128', '+18%')}
+          ${metricCard('Faturamento', currency(38240), '+22%')}
+          ${metricCard('Ticket medio', currency(298.75), '+7%')}
+          ${metricCard('OS abertas', '12', '-5%', true)}
+        </div>
+        <div class="chart-shell">
+          <div class="chart-shell-head">
+            <div>
+              <div class="eyebrow">Evolucao de faturamento</div>
+              <h3>Atuais vs. mes anterior</h3>
+            </div>
+            <div class="tabs"><button class="tab active">Atual</button><button class="tab">Mes anterior</button></div>
+          </div>
+          ${bars([12, 18, 14, 28, 34, 26, 31, 39, 44, 37, 42, 48])}
+        </div>
+      </div>
+      <div class="dashboard-side">
+        <div class="card dashboard-panel">
+          <div class="panel-head compact">
+            <div>
+              <div class="eyebrow">Acoes rapidas</div>
+              <h3>Fluxos do dia</h3>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <button class="quick-action primary" data-route="/atendimento">${iconMap.search}<span>Atendimento por placa</span></button>
+            <button class="quick-action" data-route="/nova-troca">${iconMap.plus}<span>Nova troca / OS</span></button>
+            <button class="quick-action" data-route="/clientes">${iconMap.users}<span>Consultar OS</span></button>
+            <button class="quick-action" data-route="/estoque">${iconMap.box}<span>Buscar veiculo</span></button>
+          </div>
+        </div>
+        <div class="card dashboard-panel">
+          <div class="panel-head compact">
+            <div>
+              <div class="eyebrow">Proximos retornos</div>
+              <h3>Lista acionavel</h3>
+            </div>
+            <button class="btn ghost" data-route="/retornos">Ver todos</button>
+          </div>
+          <div class="table-wrap compact-table">${returnsTable(returns.slice(0, 4), false)}</div>
+        </div>
+      </div>
     </section>
-    <section class="grid cols-2" style="margin-top:14px">
-      <div class="card">
-        <div class="card-head"><h2>Evolucao de faturamento</h2><div class="tabs"><button class="tab active">7 dias</button><button class="tab">30 dias</button><button class="tab">12 meses</button></div></div>
-        ${bars()}
+    <section class="dashboard-grid">
+      <div class="card dashboard-panel">
+        <div class="panel-head compact">
+          <div>
+            <div class="eyebrow">Ultimas trocas</div>
+            <h3>Atendimentos recentes</h3>
+          </div>
+          <button class="btn ghost" data-route="/trocas">Ver OS</button>
+        </div>
+        <div class="table-wrap compact-table">${ordersTable(workOrders.slice(0, 4), false)}</div>
       </div>
-      <div class="card">
-        <div class="card-head"><h2>Retornos proximos</h2><button class="btn ghost" data-route="/retornos">Ver todos</button></div>
-        <div class="table-wrap">${returnsTable(returns.slice(0, 5), false)}</div>
-      </div>
-    </section>
-    <section class="grid cols-3" style="margin-top:14px">
-      <div class="card">
-        <div class="card-head"><h2>Ultimas trocas</h2><button class="btn ghost" data-route="/trocas">Ver OS</button></div>
-        <div class="table-wrap">${ordersTable(workOrders.slice(0, 4), false)}</div>
-      </div>
-      <div class="card pad">
-        <h2>Estoque critico</h2>
-        <div class="timeline" style="margin-top:14px">${products.filter((p) => p.status !== 'Em estoque').map((p) => `
+      <div class="card dashboard-panel">
+        <div class="panel-head compact">
+          <div>
+            <div class="eyebrow">Estoque critico</div>
+            <h3>Reposicao pendente</h3>
+          </div>
+        </div>
+        <div class="timeline compact-timeline">${products.filter((p) => p.status !== 'Em estoque').map((p) => `
           <div class="timeline-item"><span class="dot"></span><div><strong>${p.name}</strong><div class="subtle">${p.stock} ${p.unit} disponiveis - minimo ${p.min}</div></div></div>
         `).join('')}</div>
       </div>
-      <div class="card pad">
-        <h2>Insights inteligentes</h2>
-        <div class="grid" style="margin-top:14px">
+      <div class="card dashboard-panel">
+        <div class="panel-head compact">
+          <div>
+            <div class="eyebrow">Insights inteligentes</div>
+            <h3>Operacao orientada por dados</h3>
+          </div>
+        </div>
+        <div class="insight-stack">
           ${insight('Retorno', '32 clientes entram na janela de contato nos proximos 7 dias.')}
           ${insight('Estoque', 'Filtro PSL619 deve ser reposto antes da proxima semana.')}
           ${insight('Receita', 'Oleo 5W30 responde por 41% das trocas recentes.')}
@@ -239,7 +313,14 @@ function atendimentoPage() {
     `)}
     <section class="split">
       <div class="card pad">
-        <div class="grid cols-2">
+        <div class="panel-head compact" style="padding-top:0;padding-left:0;padding-right:0;border-bottom:0">
+          <div>
+            <div class="eyebrow">2. Atendimento rapido por placa</div>
+            <h2>Buscar placa e puxar historico</h2>
+          </div>
+          <button class="btn ghost" data-action="search-plate">${iconMap.search} Consultar</button>
+        </div>
+        <div class="grid cols-2" style="margin-top:12px">
           <label class="field">
             <span>Digite a placa</span>
             <input class="input" id="plateInput" value="${state.plate}" placeholder="ABC1D23" />
@@ -249,12 +330,18 @@ function atendimentoPage() {
             <button class="btn primary" data-action="search-plate">${iconMap.search} Buscar veiculo</button>
           </div>
         </div>
-        <div id="plateResult" style="margin-top:16px">${vehicle ? vehicleFound(vehicle, customer) : vehicleMissing()}</div>
+        <div class="mini-list">
+          <div class="mini-list-head"><strong>Resultados recentes</strong><span class="subtle">Acesso rapido</span></div>
+          ${vehicles.slice(0, 5).map((item) => `<button class="mini-row" data-plate="${item.plate}"><span><strong>${item.plate}</strong><br><span class="subtle">${item.model} - ${item.year}</span></span><span class="mini-row-pill ${statusClass(item.status)}">${item.status}</span></button>`).join('')}
+        </div>
       </div>
       <div class="card pad">
-        <h2>Sugestoes para o atendimento</h2>
-        <p class="subtle">Produtos recentes, favoritos e usados anteriormente aparecem antes da digitacao longa.</p>
-        ${productSuggestions()}
+        <div id="plateResult">${vehicle ? vehicleFound(vehicle, customer) : vehicleMissing()}</div>
+        <div style="margin-top:14px">
+          <h2>Sugestoes para o atendimento</h2>
+          <p class="subtle">Produtos recentes, favoritos e usados anteriormente aparecem antes da digitacao longa.</p>
+          ${productSuggestions()}
+        </div>
       </div>
     </section>
   `);
@@ -264,7 +351,7 @@ function vehicleFound(vehicle, customer) {
   const orders = workOrders.filter((order) => order.plate === vehicle.plate);
   return `
     <div class="grid cols-3">
-      <div class="card pad">
+      <div class="card pad emphasis-card">
         <span class="badge ${statusClass(vehicle.status)}">${vehicle.status}</span>
         <h2 style="margin-top:10px">${vehicle.plate}</h2>
         <p class="subtle">${vehicle.model} - ${vehicle.year}</p>
@@ -332,14 +419,15 @@ function novaTrocaPage() {
       <button class="btn primary" data-action="finish-order">Finalizar OS</button>
     `)}
     <section class="grid cols-3">
-      <div class="card pad">
+      <div class="card pad emphasis-card">
+        <div class="eyebrow">3. Nova troca / Nova OS</div>
         <h2>Cliente e veiculo</h2>
         <div class="grid" style="margin-top:14px">
           <label class="field"><span>Cliente</span><input class="input" value="${customer.name}" /></label>
           <label class="field"><span>Telefone</span><input class="input" value="${customer.phone}" /></label>
           <label class="field"><span>Veiculo</span><input class="input" value="${vehicle.model}" /></label>
           <label class="field"><span>Placa</span><input class="input" value="${vehicle.plate}" /></label>
-          <label class="field"><span>Km atual</span><input class="input" value="${vehicle.km}" /></label>
+          <label class="field"><span>Km atual</span><input class="input" value="${vehicle.km.toLocaleString('pt-BR')}" /></label>
         </div>
       </div>
       <div class="card pad" style="grid-column:span 2">

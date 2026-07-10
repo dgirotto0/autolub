@@ -14,6 +14,8 @@ Acesse:
 http://127.0.0.1:4173/
 ```
 
+O servidor local agora entrega a SPA e a API no mesmo host.
+
 Rotas principais usam hash, por exemplo:
 
 ```text
@@ -46,6 +48,23 @@ npm run check
 npm test
 ```
 
+## API local
+
+Rotas principais:
+
+```text
+/api/health
+/api/dashboard
+/api/customers
+/api/vehicles
+/api/products
+/api/work-orders
+/api/returns
+/api/messages
+/api/campaigns
+/api/navigation
+```
+
 ## Escopo entregue
 
 - Site publico.
@@ -74,6 +93,7 @@ Para continuar o projeto sem depender do historico da conversa:
 - Use `docs/TASKS.md` como backlog operacional.
 - Use `docs/AGENT_CHECKLIST.md` antes de commitar qualquer alteracao.
 - Consulte `PLANO_EXECUCAO_SAAS_TROCA_OLEO.md` para a leitura consolidada da especificacao.
+- A base de banco para recriacao do Supabase esta em `supabase/schema.sql`.
 
 ## Observacoes
 

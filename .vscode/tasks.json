@@ -1,0 +1,29 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "serve-autolub",
+			"type": "shell",
+			"command": "C:\\Users\\NoteBookRainTI-11\\AppData\\Local\\Programs\\python-embed-3.12.10\\python.exe",
+			"args": [
+				"-m",
+				"http.server",
+				"4173",
+				"--bind",
+				"127.0.0.1"
+			],
+			"isBackground": true,
+			"group": "build"
+		},
+		{
+			"label": "serve-autolub-node",
+			"type": "shell",
+			"command": "C:\\Users\\NoteBookRainTI-11\\AppData\\Local\\Programs\\nodejs\\node.exe",
+			"args": [
+				"server.mjs"
+			],
+			"isBackground": true,
+			"group": "build"
+		}
+	]
+}
