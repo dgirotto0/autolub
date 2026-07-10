@@ -1,0 +1,11 @@
+{
+  "name": "autolub-saas",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node --check src/app.js",
+    "test": "node --test tests/data.test.mjs",
+    "dev": "python3 -m http.server 4173 --bind 127.0.0.1"
+  }
+}
